@@ -1,0 +1,173 @@
+        <div class="glass-panel-widget" style="width: 100%;">
+            <div style="display:flex; justify-content: space-between; align-items:center;">
+                <h3 style="color:var(--text-primary); font-family: 'Outfit';">Daftar Data Siswa</h3>
+                <div style="display:flex; gap:10px;">
+                    <a href="#" onclick="document.getElementById('modalTambah').style.display='flex'; return false;" class="btn-sm btn-sm-edit" style="padding: 8px 15px;">+ Tambah Siswa</a>
+                    <a href="#" onclick="document.getElementById('modalImport').style.display='flex'; return false;" class="btn-sm" style="background:#86efac; color:#000; font-weight:600; padding: 8px 15px; border-radius:6px; text-decoration:none; display:inline-block; border:1px solid #4ade80;">+ Import CSV</a>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>NIS</th>
+                            <th>Nama</th>
+                            <th>Sekolah</th>
+                            <th>L/P</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $i=1; foreach($data['siswa'] as $s) : ?>
+                        <tr>
+                            <td><?= $i++; ?></td>
+                            <td><?= esc($s['nis']); ?></td>
+                            <td><?= esc($s['nama_siswa']); ?></td>
+                            <td><?= esc($s['nama_sekolah']); ?></td>
+                            <td><?= esc($s['jenis_kelamin']); ?></td>
+                            <td>
+                                <a href="#" onclick="openUpdateModal('<?= esc($s['id_siswa']); ?>', '<?= esc($s['nis']); ?>', '<?= esc($s['nama_siswa']); ?>', '<?= esc($s['id_sekolah']); ?>', '<?= esc($s['jenis_kelamin']); ?>'); return false;" class="btn-sm btn-sm-edit">Edit</a>
+                                <a href="<?= BASEURL; ?>/siswa/hapus/<?= esc($s['id_siswa']); ?>" onclick="return confirm('Apakah Anda yakin ingin menghapus siswa ini?');" class="btn-sm btn-sm-delete">Hapus</a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+
+        <!-- MODAL TAMBAH SISWA -->
+        <div id="modalTambah" style="display:none; position:fixed; z-index:100; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7); backdrop-filter:blur(5px); justify-content:center; align-items:center;">
+            <div style="background:var(--bg-color); border:1px solid var(--glass-border); padding:30px; border-radius:20px; width:100%; max-width:500px; position:relative;">
+                <span onclick="document.getElementById('modalTambah').style.display='none'" style="position:absolute; right:20px; top:20px; font-size:1.5rem; cursor:pointer; color:var(--text-primary);">&times;</span>
+                <h3 style="font-family:'Outfit'; font-size:1.5rem; margin-bottom:20px; color:var(--text-primary);">Tambah Siswa</h3>
+                <form action="<?= BASEURL; ?>/siswa/tambah" method="post">
+<input type="hidden" name="csrf_token" value="<?= isset($_SESSION['csrf_token']) ? $_SESSION['csrf_token'] : '' ?>">
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:5px; color:var(--text-secondary);">NIS</label>
+                        <input type="text" name="nis" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--text-primary);">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:5px; color:var(--text-secondary);">Nama Siswa</label>
+                        <input type="text" name="nama_siswa" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--text-primary);">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:5px; color:var(--text-secondary);">Sekolah</label>
+                        <select name="id_sekolah" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--text-primary);">
+                            <option value="">-- Pilih Sekolah --</option>
+                            <?php foreach($data['sekolah'] as $sek) : ?>
+                                <option value="<?= esc($sek['id_sekolah']); ?>"><?= esc($sek['nama_sekolah']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display:block; margin-bottom:5px; color:var(--text-secondary);">Jenis Kelamin</label>
+                        <select name="jenis_kelamin" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--text-primary);">
+                            <option value="L">Laki-laki (L)</option>
+                            <option value="P">Perempuan (P)</option>
+                        </select>
+                    </div>
+                    <div style="text-align: right;">
+                        <button type="button" onclick="document.getElementById('modalTambah').style.display='none'" style="background:transparent; border:1px solid var(--text-secondary); color:var(--text-secondary); padding:10px 20px; border-radius:8px; cursor:pointer; margin-right:10px;">Batal</button>
+                        <button type="submit" style="background:var(--accent-color); border:none; color:white; padding:10px 20px; border-radius:8px; cursor:pointer;">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- MODAL IMPORT SISWA -->
+        <div id="modalImport" style="display:none; position:fixed; z-index:100; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7); backdrop-filter:blur(5px); justify-content:center; align-items:center;">
+            <div style="background:var(--bg-color); border:1px solid var(--glass-border); padding:30px; border-radius:20px; width:100%; max-width:500px; position:relative;">
+                <span onclick="document.getElementById('modalImport').style.display='none'" style="position:absolute; right:20px; top:20px; font-size:1.5rem; cursor:pointer; color:var(--text-primary);">&times;</span>
+                <h3 style="font-family:'Outfit'; font-size:1.5rem; margin-bottom:10px; color:var(--text-primary);">Import Data Siswa (CSV)</h3>
+                
+                <div style="background:rgba(56, 189, 248, 0.1); padding:15px; border-radius:10px; margin-bottom:20px; border:1px solid rgba(56, 189, 248, 0.2);">
+                    <p style="margin:0; font-size:0.9rem; color:var(--text-primary);">
+                        Format File harus <strong>.csv</strong> dengen urutan header kolom: <br>
+                        <code>NIS, Nama Siswa, Jenis Kelamin (L/P)</code><br>
+                        <em style="color:var(--text-secondary); font-size:0.8rem; margin-top:5px; display:block;">Pemisah kolom bisa menggunakan tanda koma (,) atau titik-koma (;). Sistem otomatis melewati data jika NIS sudah terdaftar.</em>
+                    </p>
+                </div>
+
+                <form action="<?= BASEURL; ?>/siswa/import" method="post" enctype="multipart/form-data">
+<input type="hidden" name="csrf_token" value="<?= isset($_SESSION['csrf_token']) ? $_SESSION['csrf_token'] : '' ?>">
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:5px; color:var(--text-secondary);">Sekolah Penempatan</label>
+                        <select name="id_sekolah" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--text-primary);">
+                            <option value="">-- Pilih Sekolah --</option>
+                            <?php foreach($data['sekolah'] as $sek) : ?>
+                                <option value="<?= esc($sek['id_sekolah']); ?>"><?= esc($sek['nama_sekolah']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display:block; margin-bottom:5px; color:var(--text-secondary);">File CSV (Excel)</label>
+                        <input type="file" name="file_csv" accept=".csv" required style="width:100%; padding:10px; border-radius:8px; border:1px dashed var(--glass-border); background:var(--glass-bg); color:var(--text-primary);">
+                    </div>
+
+                    <div style="text-align: right;">
+                        <button type="button" onclick="document.getElementById('modalImport').style.display='none'" style="background:transparent; border:1px solid var(--text-secondary); color:var(--text-secondary); padding:10px 20px; border-radius:8px; cursor:pointer; margin-right:10px;">Batal</button>
+                        <button type="submit" style="background:#86efac; color:#000; font-weight:600; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">Unggah & Proses</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- MODAL EDIT SISWA -->
+        <div id="modalEdit" style="display:none; position:fixed; z-index:100; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7); backdrop-filter:blur(5px); justify-content:center; align-items:center;">
+            <div style="background:var(--bg-color); border:1px solid var(--glass-border); padding:30px; border-radius:20px; width:100%; max-width:500px; position:relative;">
+                <span onclick="document.getElementById('modalEdit').style.display='none'" style="position:absolute; right:20px; top:20px; font-size:1.5rem; cursor:pointer; color:var(--text-primary);">&times;</span>
+                <h3 style="font-family:'Outfit'; font-size:1.5rem; margin-bottom:20px; color:var(--text-primary);">Edit Siswa</h3>
+                <form action="<?= BASEURL; ?>/siswa/ubah" method="post">
+<input type="hidden" name="csrf_token" value="<?= isset($_SESSION['csrf_token']) ? $_SESSION['csrf_token'] : '' ?>">
+
+                    <input type="hidden" name="id_siswa" id="edit_id">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:5px; color:var(--text-secondary);">NIS</label>
+                        <input type="text" name="nis" id="edit_nis" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--text-primary);">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:5px; color:var(--text-secondary);">Nama Siswa</label>
+                        <input type="text" name="nama_siswa" id="edit_nama" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--text-primary);">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block; margin-bottom:5px; color:var(--text-secondary);">Sekolah</label>
+                        <select name="id_sekolah" id="edit_id_sekolah" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--text-primary);">
+                            <option value="">-- Pilih Sekolah --</option>
+                            <?php foreach($data['sekolah'] as $sek) : ?>
+                                <option value="<?= esc($sek['id_sekolah']); ?>"><?= esc($sek['nama_sekolah']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display:block; margin-bottom:5px; color:var(--text-secondary);">Jenis Kelamin</label>
+                        <select name="jenis_kelamin" id="edit_jk" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--text-primary);">
+                            <option value="L">Laki-laki (L)</option>
+                            <option value="P">Perempuan (P)</option>
+                        </select>
+                    </div>
+                    <div style="text-align: right;">
+                        <button type="button" onclick="document.getElementById('modalEdit').style.display='none'" style="background:transparent; border:1px solid var(--text-secondary); color:var(--text-secondary); padding:10px 20px; border-radius:8px; cursor:pointer; margin-right:10px;">Batal</button>
+                        <button type="submit" style="background:var(--accent-color); border:none; color:white; padding:10px 20px; border-radius:8px; cursor:pointer;">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            function openUpdateModal(id, nis, nama, id_sekolah, jk) {
+                document.getElementById('modalEdit').style.display = 'flex';
+                document.getElementById('edit_id').value = id;
+                document.getElementById('edit_nis').value = nis;
+                document.getElementById('edit_nama').value = nama;
+                document.getElementById('edit_id_sekolah').value = id_sekolah;
+                document.getElementById('edit_jk').value = jk;
+            }
+        </script>
